@@ -35,6 +35,15 @@ export const createAthleteSchema = Joi.object({
     "string.empty": "Rank is required",
     "any.required": "Rank is required",
   }),
+  birthDate: Joi.date().max("now").required().messages({
+    "date.base": "Birth date must be a valid date",
+    "date.max": "Birth date cannot be in the future",
+    "any.required": "Birth date is required",
+  }),
+  weightCategory: Joi.string().required().messages({
+    "string.empty": "Weight category is required",
+    "any.required": "Weight category is required",
+  }),
   achievements: Joi.string().allow("").optional(),
 });
 
@@ -44,5 +53,10 @@ export const updateAthleteSchema = Joi.object({
   course: Joi.number().integer().min(1).max(4),
   sport: Joi.string().valid(...SPORTS),
   rank: Joi.string(),
+  birthDate: Joi.date().max("now").messages({
+    "date.base": "Birth date must be a valid date",
+    "date.max": "Birth date cannot be in the future",
+  }),
+  weightCategory: Joi.string(),
   achievements: Joi.string().allow(""),
 }).min(1);
