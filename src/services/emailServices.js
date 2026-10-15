@@ -32,18 +32,28 @@ export const sendVerificationEmail = async ({ email, verificationToken }) => {
 
   const verifyLink = `${APP_URL}/api/auth/verify/${verificationToken}`;
 
-  // Dev-зручність: MAIL_HOST налаштований на Mailtrap Sandbox, який ПЕРЕХОПЛЮЄ
-  // листи і ніколи не доставляє їх на реальну поштову скриньку (це навмисна
-  // поведінка sandbox-режиму, не баг). Тож під час локальної розробки лінк
-  // підтвердження зручніше брати прямо з цього логу, а не з пошти.
+  // Dev-зручність: лінк підтвердження завжди дублюється в лог, незалежно
+  // від того, чи реально дійшов лист (корисно, поки перевіряємо доставку).
   console.log(`[email] Лінк підтвердження для ${email}: ${verifyLink}`);
 
   const html = template({ verifyLink });
 
-  await transporter.sendMail({
-    from: MAIL_FROM,
-    to: email,
-    subject: "Please confirm your email",
-    html,
-  });
+  try {
+    const info = await transporter.sendMail({
+      from: MAIL_FROM,
+      to: email,
+      subject: "Please confirm your email",
+      html,
+    });
+
+    // Показує, що саме відповів поштовий сервер: messageId підтверджує, що
+    // лист прийнятий для доставки; accepted/rejected — чи прийняв сервер
+    // саме цю адресу одержувача.
+    console.log(
+      `[email] SMTP відповів: messageId=${info.messageId}, accepted=${JSON.stringify(info.accepted)}, rejected=${JSON.stringify(info.rejected)}, response="${info.response}"`,
+    );
+  } catch (error) {
+    console.error(`[email] Помилка відправки листа на ${email}:`, error.message);
+    throw error;
+  }
 };
