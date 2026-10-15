@@ -32,6 +32,12 @@ export const sendVerificationEmail = async ({ email, verificationToken }) => {
 
   const verifyLink = `${APP_URL}/api/auth/verify/${verificationToken}`;
 
+  // Dev-зручність: MAIL_HOST налаштований на Mailtrap Sandbox, який ПЕРЕХОПЛЮЄ
+  // листи і ніколи не доставляє їх на реальну поштову скриньку (це навмисна
+  // поведінка sandbox-режиму, не баг). Тож під час локальної розробки лінк
+  // підтвердження зручніше брати прямо з цього логу, а не з пошти.
+  console.log(`[email] Лінк підтвердження для ${email}: ${verifyLink}`);
+
   const html = template({ verifyLink });
 
   await transporter.sendMail({
