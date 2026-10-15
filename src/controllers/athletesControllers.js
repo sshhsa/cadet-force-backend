@@ -6,7 +6,7 @@ import { Athlete } from "../models/Athlete.js";
 import { uploadAvatar } from "../services/cloudinaryServices.js";
 
 const getAll = async (req, res) => {
-  const athletes = await Athlete.find({ owner: req.user._id });
+  const athletes = await Athlete.find({});
 
   res.json(athletes);
 };

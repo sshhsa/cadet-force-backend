@@ -12,25 +12,36 @@ import {
 
 export const athleteRouter = Router();
 
-athleteRouter.use(authenticate);
-
 athleteRouter.get("/", athleteControllers.getAll);
-athleteRouter.get("/:id", isValidId, athleteControllers.getById);
+athleteRouter.get(
+  "/:id",
+  authenticate,
+  isValidId,
+  athleteControllers.getById,
+);
 athleteRouter.post(
   "/",
+  authenticate,
   validateBody(createAthleteSchema),
   athleteControllers.create,
 );
 athleteRouter.patch(
   "/:id",
+  authenticate,
   isValidId,
   validateBody(updateAthleteSchema),
   athleteControllers.update,
 );
 athleteRouter.patch(
   "/:id/avatar",
+  authenticate,
   isValidId,
   upload.single("avatar"),
   athleteControllers.updateAvatar,
 );
-athleteRouter.delete("/:id", isValidId, athleteControllers.remove);
+athleteRouter.delete(
+  "/:id",
+  authenticate,
+  isValidId,
+  athleteControllers.remove,
+);
